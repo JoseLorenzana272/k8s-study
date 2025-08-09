@@ -1,0 +1,112 @@
+#3.1
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidecarPod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - mountPath: /shared
+          name: sideVolume
+    - name: sidebusybox
+      image: busybox
+      command: 
+        - sh
+        - -c
+        - 'while true; do echo "$(date): Log entry" >> /shared/app.log; sleep 10; done'
+      volumeMounts:
+        - mountPath: /shared
+          name: sideVolume
+  volumes:
+    - name: sideVolume
+      emptyDir: {}
+
+---
+#3.2
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ambassador-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - mountPath: /shared
+          name: ambassador-volume
+    - name: nginx-ambassador
+      image: nginx:latest
+      ports:
+        - containerPort: 8080
+      volumeMounts:
+        - mountPath: /shared
+          name: ambassador-volume
+  volumes:
+    - name: ambassador-volume
+      emptyDir:
+        {}
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-logger-pod
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    volumeMounts:
+    - name: log-volume
+      mountPath: /var/log/nginx
+  - name: log-adapter
+    image: busybox:latest
+    command: ["/bin/sh"]
+    args:
+    - -c
+    - |
+      while true; do 
+        if [ -f /var/log/nginx/access.log ]; then 
+          tail -f /var/log/nginx/access.log | grep ERROR
+        fi
+        sleep 5
+      done
+    volumeMounts:
+    - name: log-volume
+      mountPath: /var/log/nginx
+  volumes:
+  - name: log-volume
+    emptyDir: {}
+
+---
+#4.1
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - mountPath: /shared
+          name: shared
+    
+  initContainers:
+    - name: busybox-container
+      image: busybox
+      command:
+        - sh
+        - -c
+        - touch /shared/ready.txt
+      volumeMounts:
+        - mountPath: /shared
+          name: shared
+  volumes:
+    - name: shared
+      emptyDir:
+        {}

@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-init-container
+  labels:
+    environment: prod
+    tier: frontend
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: website-volume
+      emptyDir: {}
+  initContainers:
+    - name: download-website
+      image: busybox
+      command:
+        - sh
+        - -c
+        - |
+          wget https://github.com/iamgini/website-demo-one-page/archive/refs/heads/main.zip -O /tmp/website.zip && \
+          mkdir /tmp/website && \
+          unzip /tmp/website.zip -d /tmp/website && \
+          cp -r /tmp/website/website-demo-one-page-main/* /usr/share/nginx/html
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: website-volume
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: website-volume

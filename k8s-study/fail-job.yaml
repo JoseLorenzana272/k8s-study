@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fail-job
+spec:
+  backoffLimit: 4
+  template:
+    metadata: 
+      name: fail-job
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: fail-container
+        image: busybox
+        command: ["/bin/sh", "-c"]
+        args: ["exit 1; sleep 3"]

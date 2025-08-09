@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: emptydir-pod
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      volumeMounts:
+        - mountPath: /var/i-am-emptydir-volume
+          name: emptydir-volume
+    - name: debian-container
+      image: debian
+      command: ["/bin/sh"]
+      args: ["-c", "while true; do sleep 30; done;"]
+      volumeMounts:
+        - mountPath: /var/i-am-emptydir-volume
+          name: emptydir-volume
+  volumes:
+    - name: emptydir-volume
+      emptyDir: {}
