@@ -1,4 +1,4 @@
-# 2.1
+# 2.1 - EmptyDir Volume Example
 apiVersion: v1
 kind: Pod
 metadata:
@@ -15,7 +15,7 @@ spec:
       emptyDir: {}
 
 ---
-#2.2
+#2.2 - HostPath Volume Example
 apiVersion: v1
 kind: Pod
 metadata:
@@ -39,7 +39,7 @@ spec:
         type: Directory
 
 ---
-#2.3
+#2.3 - EmptyDir and HostPath Volume Example
 apiVersion: v1
 kind: Pod
 metadata:
