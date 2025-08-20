@@ -1,0 +1,19 @@
+# A Pod definition with request and limit resources
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-request-limit
+  namespace: quota-ns
+spec:
+  containers:
+    - name: nginx-container
+      image: nginx:latest
+      resources:
+        requests:
+          memory: "512Mi"
+          cpu: "100m"
+        limits:
+          memory: "1Gi"
+          cpu: "500m"
+# Memory is expressed in Bytes (one Mib = 1,048, 576 bytes)
+# CPU is expressed in milicores and allows fractional values
