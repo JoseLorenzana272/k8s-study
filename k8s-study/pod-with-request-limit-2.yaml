@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-with-request-limit-2
+  namespace: quota-ns
+spec:
+  containers:
+    - name: nginx-container-2
+      image: nginx:latest
+      resources:
+        requests:
+          memory: "3Gi"
+          cpu: "100m"
+        limits:
+          memory: "4Gi"
+          cpu: "500m"
+          # we can also specify here the number of other esources like Pods, Services, etc
+#This will throw an error, it exceeds the quota from that namespace
