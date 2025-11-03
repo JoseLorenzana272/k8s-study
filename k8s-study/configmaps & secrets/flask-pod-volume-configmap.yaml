@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flask-pod-with-configmap-volume
+spec:
+  containers:
+    - name: flask-with-configmap-volume
+      image: quay.io/iamgini/my-flask-app:1.0
+      volumeMounts:
+        - mountPath: /etc/conf
+          name: configuration-volume
+  volumes:
+    - name: configuration-volume
+      configMap:
+        name: my-syxth-configmap
